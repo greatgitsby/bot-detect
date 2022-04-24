@@ -13,7 +13,7 @@ def protected_endpoint(function):
     def wrapper():
         url = request.url
         print(f"Protecting {url}")
-        blocked = "product" in url
+        blocked = "product" not in url
 
         return function(blocked)
 
