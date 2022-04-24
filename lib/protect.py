@@ -11,9 +11,9 @@ def protected_endpoint(function):
 
     @wraps(function)
     def wrapper():
-        url = request.url
-        print(f"Protecting {url}")
-        blocked = "product" not in url
+        blocked = False
+
+        # TODO implement ML model
 
         return function(blocked)
 
