@@ -1,5 +1,5 @@
-from flask import Flask, render_template
-from lib import protected_endpoint
+from flask import Flask, Response, render_template
+from lib import protected_endpoint, request_collector, response_collector
 
 app = Flask(__name__,
             static_url_path='',
@@ -9,6 +9,9 @@ app = Flask(__name__,
 app.secret_key = "bawtprotection"
 
 
+# Register the data collector
+@app.before_request(request_collector)
+@app.after_request(response_collector)
 @app.route('/')
 @app.route('/home')
 @protected_endpoint

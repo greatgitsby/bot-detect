@@ -1,1 +1,3 @@
 from lib.protect import protected_endpoint
+from lib.data_collector import data_collector_request_handler as request_collector
+from lib.data_collector import data_collector_response_handler as response_collector
