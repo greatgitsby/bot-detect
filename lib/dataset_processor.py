@@ -17,6 +17,37 @@ def get_session_stats_for_ip(logs: pd.DataFrame, ip: str) -> pd.DataFrame:
 
 
 def __get_session_stats_from_df(df: pd.DataFrame) -> pd.DataFrame:
+    session_log_dict = {
+        'num_sessions': 0,
+        'num_unique_user_agents': 0,
+        'num_unique_header_hashes': 0,
+        'num_requests': 0,
+        'num_bytes_requested': 0,
+        'num_requests_GET': 0,
+        'num_requests_HEAD': 0,
+        'num_requests_POST': 0,
+        'num_request_codes_3XX': 0,
+        'num_request_codes_4XX': 0,
+        'max_requests_for_one_page': 0,
+        'avg_requests_per_pag': 0,
+        'std_dev_page_depth': 0,
+        'max_consecutive_requests_for_one_page': 0,
+        'pct_consecutive_requests_for_one_page': 0,
+        'sess_time_secs': 0,
+        'browse_speed_secs': 0,
+        'avg_inter_req_time': 0,
+        'std_dev_inter_req_time': 0,
+        'num_unique_refers': 0,
+        'pct_referer': 0,
+        'pct_no_referer': 0,
+    }
+
+    # If there is less than one request, initialize session as "empty"
+    if len(df) <= 1:
+        for k in session_log_dict.keys():
+            session_log_dict[k] = [session_log_dict[k]]
+
+        return pd.DataFrame.from_dict(session_log_dict)
 
     # Sort all requests by time
     df.sort_values(by='time', ascending=False)
@@ -41,14 +72,9 @@ def __get_session_stats_from_df(df: pd.DataFrame) -> pd.DataFrame:
     num_request_codes_3XX = len(df['resp_code'].between(300, 399))
     num_request_codes_4XX = len(df['resp_code'].between(400, 499))
 
-    if len(page_requests) > 0:
-        max_requests_for_one_page = page_requests[page_requests.argmax()]
-        avg_requests_per_page = np.average(page_requests)
-        std_dev_page_depth = np.std(df['req_depth'])
-    else:
-        max_requests_for_one_page = 0
-        avg_requests_per_page = 0
-        std_dev_page_depth = 0
+    max_requests_for_one_page = page_requests[page_requests.argmax()]
+    avg_requests_per_page = np.average(page_requests)
+    std_dev_page_depth = np.std(df['req_depth'])
 
     # Max consec. requests for a page
     group_paths = (df['req_path'] != df['req_path'].shift()).cumsum()
