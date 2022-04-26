@@ -42,7 +42,9 @@
           <h1>A real, not-fake website</h1>
           <h2>Please navigate around the site as you normally would.</h2>
         </hgroup>
-        <p><a href="/product" role="button">View Product</a></p>
+
+        <p><a href="/products/1" role="button">View Product 1</a></p>
+        <p><a href="/products/2" role="button">View Product 2</a></p>
       </header>
     </div><!-- ./ Hero -->
 
@@ -51,11 +53,15 @@
       <div class="grid">
 
         <section>
-          <hgroup>
-            <h2>Ut sit amet sem ut velit</h2>
-            <h3>Quisque mi est</h3>
-          </hgroup>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque lobortis est vel velit bibendum ultrices. Sed aliquam tortor vel odio fermentum ullamcorper eu vitae neque. Sed non diam at tellus venenatis viverra. Vestibulum et leo laoreet arcu tempor eleifend venenatis ac leo. Pellentesque euismod justo sed nisl sollicitudin varius. Duis venenatis nisl sit amet ante rutrum posuere. Etiam nec ullamcorper leo, sed placerat mauris.</p>
+          <h2>Why does this site exist?</h2>
+          <p>
+            Because this field is somewhat 'secretive,' i.e. sharing bot protection strategies and datasets is giving
+            the bad actors an edge on the competition, there isn't much publicly available data for me to draw on.
+            So, after reading a few research papers, I created a simple webpage to collect some of my own statistics. Navigating this page helps
+            give me human-like behavior to extrapolate on to ultimately land on a hopefully robust feature set. Thank you
+            for helping me! The pages to check are the 'product pages' above as well as the subscribe
+            form at the bottom of the page. Visiting each one a few times throughout the day will help me toward my goal!
+          </p>
           <figure>
             <img src="/img/photo-1.jpeg" alt="Architecture">
             <figcaption>Image from me</figcaption>
@@ -67,17 +73,17 @@
         </section>
 
         <aside>
-          <a href="#" aria-label="Example" onclick="event.preventDefault()"><img src="https://source.unsplash.com/T5nXYXCf50I/1500x750" alt="Architecture"></a>
+          <a href="#" aria-label="Example" onclick="event.preventDefault()"><img src="/img/photo2.jpeg" alt="Architecture"></a>
           <p>
             <a href="#" onclick="event.preventDefault()">Donec sit amet</a><br>
             <small>Class aptent taciti sociosqu ad litora torquent per conubia nostra</small>
           </p>
-          <a href="#" aria-label="Example" onclick="event.preventDefault()"><img src="https://source.unsplash.com/tb4heMa-ZRo/1500x750" alt="Architecture"></a>
+          <a href="#" aria-label="Example" onclick="event.preventDefault()"><img src="/img/photo3.jpeg" alt="Architecture"></a>
           <p>
             <a href="#" onclick="event.preventDefault()">Suspendisse potenti</a><br>
             <small>Proin non condimentum tortor. Donec in feugiat sapien.</small>
           </p>
-          <a href="#" aria-label="Example" onclick="event.preventDefault()"><img src="https://source.unsplash.com/Ru3Ap8TNcsk/1500x750" alt="Architecture"></a>
+          <a href="#" aria-label="Example" onclick="event.preventDefault()"><img src="/img/photo4.jpeg" alt="Architecture"></a>
           <p>
             <a href="#" onclick="event.preventDefault()">Nullam lobortis placerat aliquam</a><br>
             <small>Maecenas vitae nibh blandit dolor commodo egestas vel eget neque. Praesent semper justo orci, vel imperdiet mi auctor in.</small>
@@ -93,7 +99,7 @@
         <article>
           <hgroup>
             <h2>Subscribe</h2>
-            <h3>Litora torquent per conubia nostra</h3>
+            <h3>I am not recording any names or emails from this -- but do fill it out to submit the form!</h3>
           </hgroup>
             <form class="grid" action="/subscribe">
               <input type="text" id="firstname" name="firstname" placeholder="First name" aria-label="First name" required>

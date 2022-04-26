@@ -26,13 +26,22 @@ def home(blocked: bool):
     return render_template('home.html')
 
 
-@app.route('/product')
+@app.route('/products/1')
 @protected_endpoint
-def product(blocked: bool):
+def product1(blocked: bool):
     if blocked:
         return render_template('blocked.html')
 
-    return render_template('product.html')
+    return render_template('product1.html')
+
+
+@app.route('/products/2')
+@protected_endpoint
+def product2(blocked: bool):
+    if blocked:
+        return render_template('blocked.html')
+
+    return render_template('product2.html')
 
 @app.route('/subscribe')
 def subscribed():
