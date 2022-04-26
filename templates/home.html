@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Company example • Pico.css</title>
+    <title>Real website • Moen</title>
     <meta name="description" content="A classic company or blog layout with a sidebar. Built with Pico CSS.">
     <link rel="shortcut icon" href="https://picocss.com/favicon.ico">
     <link rel="canonical" href="https://picocss.com/examples/company/">
@@ -22,7 +22,7 @@
     <div class="hero" data-theme="dark">
       <nav class="container-fluid">
         <ul>
-          <li><a href="" class="contrast" onclick="event.preventDefault()"><strong>Brand</strong></a></li>
+          <li><a href="/" class="contrast" onclick="event.preventDefault()"><strong>Moen</strong></a></li>
         </ul>
         <ul>
           <li>
@@ -39,10 +39,10 @@
       </nav>
       <header class="container">
         <hgroup>
-          <h1>Company</h1>
-          <h2>A classic company or blog layout with a sidebar</h2>
+          <h1>A real, not-fake website</h1>
+          <h2>Please navigate around the site as you normally would.</h2>
         </hgroup>
-        <p><a href="#" role="button" onclick="event.preventDefault()">Call to action</a></p>
+        <p><a href="/product" role="button">View Product</a></p>
       </header>
     </div><!-- ./ Hero -->
 
@@ -95,10 +95,10 @@
             <h2>Subscribe</h2>
             <h3>Litora torquent per conubia nostra</h3>
           </hgroup>
-            <form class="grid">
+            <form class="grid" action="/subscribe">
               <input type="text" id="firstname" name="firstname" placeholder="First name" aria-label="First name" required>
               <input type="email" id="email" name="email" placeholder="Email address" aria-label="Email address" required>
-              <button type="submit" onclick="event.preventDefault()">Subscribe</button>
+              <button type="submit">Subscribe</button>
           </form>
         </article>
       </div>

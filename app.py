@@ -34,6 +34,12 @@ def product(blocked: bool):
 
     return render_template('product.html')
 
+@app.route('/subscribe')
+def subscribed():
+    name = request.args.get('firstname')
+    email = request.args.get('email')
+    return render_template('subscribed.html', name=name, email=email)
+
 @app.route("/rows")
 def rows():
     request_log = get_request_log()

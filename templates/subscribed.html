@@ -4,16 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/pico.min.css">
-    <title>Hello, world!</title>
+    <link rel="stylesheet" href="css/subscribed.css">
+    <title>Subscribed!</title>
   </head>
   <body>
     <main class="container">
       <p><a href="/" role="button">Back</a></p>
-      <h1>Product</h1>
-      <h2>Product details</h2>
+      <h1>Thanks for 'subscribing,' {{ name }}! Here's a cool picture.</h1>
       <figure>
-        <img src="/img/shoe.jpeg">
-        <figcaption>Jordan 1 Retro High -- White University Blue Black</figcaption>
+        <img src="/img/photo-1.jpeg">
+        <figcaption>You told us your email is {{ email }}</figcaption>
       </figure>
     </main>
     <!-- Footer -->
