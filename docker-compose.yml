@@ -1,21 +1,47 @@
 services:
   bot-detect:
     build: .
-    network_mode: 'host'
+    networks:
+      - web
+    depends_on:
+      - postgres-bot
     ports:
       - 3000
     environment:
       - DB_DRIVER=postgresql
-      - DB_URL=postgresql://app:app@postgres:5432/app
+      - DB_URL=postgresql://trey:trey@postgres-bot:5432/app
     command:
+      - '--host'
+      - '0.0.0.0'
       - '--port'
       - '3000'
+    labels:
+      - "traefik.http.routers.bot-detect.rule=Host(`bot.internal.moen.ai`)"
+      - "traefik.http.routers.bot-detect.entrypoints=web-secure"
+      - "traefik.http.routers.bot-detect.tls.certResolver=primary"
+      - "traefik.http.services.bot-detect.loadBalancer.server.port=3000"
 
-  postgres:
+
+  postgres-bot:
     image: postgres:14.2-alpine
-    container_name: postgres
-    network_mode: 'host'
+    container_name: postgres-bot
+    networks:
+      - web
     environment:
-      - POSTGRES_USER=app
-      - POSTGRES_PASSWORD=app
       - POSTGRES_DB=app
+      - POSTGRES_USER=trey
+      - POSTGRES_PASSWORD=trey
+    ports:
+      - 5432
+    labels:
+      - "traefik.tcp.routers.postgres-bot.entrypoints=postgres"
+      - "traefik.tcp.routers.postgres-bot.tls=false"
+      - "traefik.tcp.routers.postgres-bot.rule=HostSNI(`*`)"
+      - "traefik.tcp.services.postgres-bot.loadBalancer.server.port=5432"
+
+volumes:
+  pgdata:
+
+networks:
+  web:
+    external: true

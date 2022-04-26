@@ -20,6 +20,9 @@ def protected_endpoint(function):
         if 'X-Fake-Remote-Ip' in request.headers:
             ip = request.headers.get('x-fake-remote-ip')
 
+        if 'X-Forwarded-For' in request.headers:
+            ip = request.headers.get('x-forwarded-for')
+
         request_log = get_request_log()
 
         if len(request_log) > 0:

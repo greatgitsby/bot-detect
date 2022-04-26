@@ -10,6 +10,8 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 COPY /lib /lib
+COPY /static /static
+COPY /templates /templates
 
 # configure the container to run in an executed manner
 ENTRYPOINT [ "python", "-m", "flask", "run" ]

@@ -45,6 +45,9 @@ def __get_request_attrs() -> dict:
         ip = request.headers.get('x-fake-remote-ip')
         header_keys.remove('X-Fake-Remote-Ip')
 
+    if 'X-Forwarded-For' in header_keys:
+        ip = request.headers.get('x-forwarded-for')
+
     header_hash = md5(' '.join(header_keys).encode('ascii')).hexdigest()
 
     if 'id' not in session:
@@ -97,7 +100,6 @@ def init_request_log():
             on requests ("index");
     """
     db.execute(sql)
-    db.commit()
 
 
 def add_new_entry(entry: pd.DataFrame):
