@@ -72,12 +72,40 @@ def get_db():
             db = g._database = create_engine(DB_URL).connect()
     return db
 
+def init_request_log():
+    db = get_db()
+    sql = """
+       -- auto-generated definition
+        create table if not exists requests
+        (
+            "index"             INTEGER,
+            ip                  TEXT,
+            sess_id             TEXT,
+            time                TIMESTAMP,
+            req_method          TEXT,
+            req_path            TEXT,
+            req_depth           INTEGER,
+            ua                  TEXT,
+            referer             TEXT,
+            header_hash         TEXT,
+            resp_code           INTEGER,
+            resp_content_type   TEXT,
+            resp_content_length INTEGER
+        );
+
+        create index if not exists ix_requests_index
+            on requests ("index");
+    """
+    db.execute(sql)
+    db.commit()
+
 
 def add_new_entry(entry: pd.DataFrame):
     entry.to_sql('requests', get_db(), if_exists='append')
 
 
 def get_request_log() -> pd.DataFrame:
+    init_request_log()
     return pd.read_sql('SELECT * FROM requests', get_db())
 
 
