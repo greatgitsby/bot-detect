@@ -1,15 +1,26 @@
+import os
+import sqlite3
+from sqlalchemy import create_engine
+
 from flask import request, session, Response, g
 from hashlib import md5
 from datetime import datetime
 import uuid
 import pandas as pd
 
-from dataset_preprocessor import process
+DB_DRIVER = os.environ['DB_DRIVER'] if 'DB_DRIVER' in os.environ else 'sqlite3'
+DB_URL = os.environ['DB_URL'] if 'DB_URL' in os.environ else 'log.db'
 
-__DONT_USE_DATAFRAME: pd.DataFrame | None = None
+
+def __get_response_attrs(response: Response) -> dict:
+    return {
+        'resp_code': response.status_code,
+        'resp_content_type': response.content_type,
+        'resp_content_length': response.content_length,
+    }
 
 
-def get_request_attrs() -> dict:
+def __get_request_attrs() -> dict:
     """
     Get the row for the dataset
 
@@ -34,8 +45,6 @@ def get_request_attrs() -> dict:
         ip = request.headers.get('x-fake-remote-ip')
         header_keys.remove('X-Fake-Remote-Ip')
 
-    print(header_keys)
-
     header_hash = md5(' '.join(header_keys).encode('ascii')).hexdigest()
 
     if 'id' not in session:
@@ -54,27 +63,36 @@ def get_request_attrs() -> dict:
     }
 
 
-def get_response_attrs(response: Response) -> dict:
-    return {
-        'resp_code': response.status_code,
-        'resp_content_type': response.content_type,
-        'resp_content_length': response.content_length,
-    }
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        if DB_DRIVER == 'sqlite3':
+            db = g._database = sqlite3.connect(DB_URL)
+        elif DB_DRIVER == 'postgresql':
+            db = g._database = create_engine(DB_URL).connect()
+    return db
 
 
-def data_collector_request_handler(*args, **kwargs):
+def add_new_entry(entry: pd.DataFrame):
+    entry.to_sql('requests', get_db(), if_exists='append')
+
+
+def get_request_log() -> pd.DataFrame:
+    return pd.read_sql('SELECT * FROM requests', get_db())
+
+
+def request_handler(*args, **kwargs):
+
     if g and '__request_attrs__' not in g:
-        g.__request_attrs__ = get_request_attrs()
+        g.__request_attrs__ = __get_request_attrs()
 
 
-def data_collector_response_handler(response: Response):
-    global __DONT_USE_DATAFRAME
-
+def response_handler(response: Response):
     if g and '__request_attrs__' in g:
         entry = {}
 
         request_log_entry = dict(g.__request_attrs__)
-        response_log_entry = dict(get_response_attrs(response))
+        response_log_entry = dict(__get_response_attrs(response))
 
         entry.update(request_log_entry)
         entry.update(response_log_entry)
@@ -84,12 +102,6 @@ def data_collector_response_handler(response: Response):
 
         pd_entry = pd.DataFrame.from_dict(entry)
 
-        if __DONT_USE_DATAFRAME is None:
-            __DONT_USE_DATAFRAME = pd_entry
-        else:
-            __DONT_USE_DATAFRAME = pd.concat((__DONT_USE_DATAFRAME, pd_entry,), ignore_index=True)
-            __DONT_USE_DATAFRAME.to_csv("data.csv")
-            process(__DONT_USE_DATAFRAME)
-
+        add_new_entry(pd_entry)
 
     return response

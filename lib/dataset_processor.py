@@ -1,13 +1,27 @@
-import datetime
-
 import pandas as pd
 import numpy as np
 
+# Disable copy warning - the warning is for
+# a different use case than mine
+# https://stackoverflow.com/a/20627316
+pd.options.mode.chained_assignment = None  # default='warn'
 
-def get_session_stats_from_df(df: pd.DataFrame):
+
+def get_session_stats_for_ip(logs: pd.DataFrame, ip: str) -> pd.DataFrame:
+    if 'ip' not in logs:
+        return pd.DataFrame()
+
+    logs_from_ip = logs[logs['ip'] == ip]
+
+    return __get_session_stats_from_df(logs_from_ip)
+
+
+def __get_session_stats_from_df(df: pd.DataFrame) -> pd.DataFrame:
 
     # Sort all requests by time
     df.sort_values(by='time', ascending=False)
+
+    df['time'] = pd.to_datetime(df['time'])
 
     first_req, last_req = df.head(1), df.tail(1)
 
@@ -43,7 +57,7 @@ def get_session_stats_from_df(df: pd.DataFrame):
     last_req_ts = (last_req_time.iloc[0])
 
     sess_time_secs = (last_req_ts - first_req_ts).total_seconds()
-    browse_speed_secs = num_requests / sess_time_secs
+    browse_speed_secs = (num_requests / sess_time_secs) if sess_time_secs != 0 else 0
 
     inter_req_times = (df["time"] - df["time"].shift(1)) / np.timedelta64(1, "s")
     avg_inter_req_time = np.average(inter_req_times.dropna())
@@ -53,6 +67,7 @@ def get_session_stats_from_df(df: pd.DataFrame):
     pct_referer = len(df['referer'].dropna()) / len(df['referer'])
     pct_no_referer = len(df[df['referer'].isnull()]) / len(df['referer'])
 
+    """
     req_images = df[df['resp_content_type'].str.contains("image")]
     req_css = df[df['resp_content_type'].str.contains("css")]
     req_json = df[df['resp_content_type'].str.contains("json")]
@@ -62,41 +77,48 @@ def get_session_stats_from_df(df: pd.DataFrame):
     pct_css = len(req_css) / len(df)
     pct_json = len(req_json) / len(df)
     pct_javascript = len(req_javascript) / len(df)
+    """
 
-    return (
-        num_sessions,
-        num_unique_user_agents,
-        num_unique_header_hashes,
-        num_requests,
-        num_bytes_requested,
-        num_requests_GET,
-        num_requests_HEAD,
-        num_requests_POST,
-        num_request_codes_3XX,
-        num_request_codes_4XX,
-        max_requests_for_one_page,
-        avg_requests_per_page,
-        std_dev_page_depth,
-        max_consecutive_requests_for_one_page,
-        pct_consecutive_requests_for_one_page,
-        sess_time_secs,
-        browse_speed_secs,
-        avg_inter_req_time,
-        std_dev_inter_req_time,
-        num_unique_refers,
-        pct_referer,
-        pct_no_referer,
-        pct_css,
-        pct_images,
-        pct_json,
-        pct_javascript,
-    )
+    session_log_dict = {
+        'num_sessions': num_sessions,
+        'num_unique_user_agents': num_unique_user_agents,
+        'num_unique_header_hashes': num_unique_header_hashes,
+        'num_requests': num_requests,
+        'num_bytes_requested': num_bytes_requested,
+        'num_requests_GET': num_requests_GET,
+        'num_requests_HEAD': num_requests_HEAD,
+        'num_requests_POST': num_requests_POST,
+        'num_request_codes_3XX': num_request_codes_3XX,
+        'num_request_codes_4XX': num_request_codes_4XX,
+        'max_requests_for_one_page': max_requests_for_one_page,
+        'avg_requests_per_pag': avg_requests_per_page,
+        'std_dev_page_depth': std_dev_page_depth,
+        'max_consecutive_requests_for_one_page': max_consecutive_requests_for_one_page,
+        'pct_consecutive_requests_for_one_page': pct_consecutive_requests_for_one_page,
+        'sess_time_secs': sess_time_secs,
+        'browse_speed_secs': browse_speed_secs,
+        'avg_inter_req_time': avg_inter_req_time,
+        'std_dev_inter_req_time': std_dev_inter_req_time,
+        'num_unique_refers': num_unique_refers,
+        'pct_referer': pct_referer,
+        'pct_no_referer': pct_no_referer,
+    }
+
+    for k in session_log_dict.keys():
+        session_log_dict[k] = [session_log_dict[k]]
+
+    return pd.DataFrame.from_dict(session_log_dict)
 
 
 def process(logs: pd.DataFrame):
+    session_log = None
     unique_ips = logs["ip"].unique()
 
     for ip in unique_ips:
-        logs_from_ip = logs[logs["ip"] == ip]
-        session_log = get_session_stats_from_df(logs_from_ip)
-        print(session_log)
+
+        session_log_entry = get_session_stats_for_ip(logs, ip)
+
+        if session_log is None:
+            session_log = session_log_entry
+        else:
+            session_log = pd.concat((session_log, session_log_entry), ignore_index=True)
