@@ -41,9 +41,14 @@ def __get_session_stats_from_df(df: pd.DataFrame) -> pd.DataFrame:
     num_request_codes_3XX = len(df['resp_code'].between(300, 399))
     num_request_codes_4XX = len(df['resp_code'].between(400, 499))
 
-    max_requests_for_one_page = page_requests[page_requests.argmax()]
-    avg_requests_per_page = np.average(page_requests)
-    std_dev_page_depth = np.std(df['req_depth'])
+    if len(page_requests) > 0:
+        max_requests_for_one_page = page_requests[page_requests.argmax()]
+        avg_requests_per_page = np.average(page_requests)
+        std_dev_page_depth = np.std(df['req_depth'])
+    else:
+        max_requests_for_one_page = 0
+        avg_requests_per_page = 0
+        std_dev_page_depth = 0
 
     # Max consec. requests for a page
     group_paths = (df['req_path'] != df['req_path'].shift()).cumsum()
