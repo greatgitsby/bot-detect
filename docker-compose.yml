@@ -16,7 +16,7 @@ services:
       - '--port'
       - '3000'
     labels:
-      - "traefik.http.routers.bot-detect.rule=Host(`bot.internal.moen.ai`)"
+      - "traefik.http.routers.bot-detect.rule=Host(`ml.moen.ai`)"
       - "traefik.http.routers.bot-detect.entrypoints=web-secure"
       - "traefik.http.routers.bot-detect.tls.certResolver=primary"
       - "traefik.http.services.bot-detect.loadBalancer.server.port=3000"
@@ -34,9 +34,9 @@ services:
     ports:
       - 5432
     labels:
+      - "traefik.tcp.routers.postgres-bot.rule=HostSNI(`*`)"
       - "traefik.tcp.routers.postgres-bot.entrypoints=postgres"
       - "traefik.tcp.routers.postgres-bot.tls=false"
-      - "traefik.tcp.routers.postgres-bot.rule=HostSNI(`*`)"
       - "traefik.tcp.services.postgres-bot.loadBalancer.server.port=5432"
 
 volumes:
